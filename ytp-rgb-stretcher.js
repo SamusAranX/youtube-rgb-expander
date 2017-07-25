@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         RGB Stretcher
 // @namespace    https://peterwunder.de
-// @version      1.0
+// @version      1.1
 // @description  Uses CSS filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle.
 // @author       Peter Wunder
-// @match        https://www.youtube.com/watch?v=*
+// @match        https://www.youtube.com/*
 // @grant        none
 // ==/UserScript==
 
@@ -27,6 +27,10 @@
     });
     
     var rightControls = document.getElementsByClassName("ytp-right-controls")[0];
-    var firstRightControl = rightControls.firstChild;
-    rightControls.insertBefore(buttonElement, firstRightControl);
+    if (rightControls !== null) {
+        var firstRightControl = rightControls.firstChild;
+        rightControls.insertBefore(buttonElement, firstRightControl);
+    } else {
+        console.log("Couldn't find video controls.");
+    }
 })();
