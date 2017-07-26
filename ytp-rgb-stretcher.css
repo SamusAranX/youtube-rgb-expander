@@ -1,4 +1,16 @@
 /* https://www.youtube.com/watch?v=* */
+video.video-stream.html5-main-video {
+	transition: .5s filter ease;
+	filter: contrast(100%) brightness(100%);
+}
 body.ytp-rgb-stretcher video.video-stream.html5-main-video {
-	filter: contrast(116.4383721%) brightness(94%);
+	filter: contrast(116.4383721%) brightness(95%);
+}
+
+@keyframes ytp-rgb-fadein {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.ytp-button.ytp-rgb-button {
+	animation: ytp-rgb-fadein .5s ease 1;
 }
