@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RGB Stretcher
 // @namespace    https://peterwunder.de
-// @version      1.2
+// @version      1.3
 // @description  Uses CSS filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle.
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
@@ -22,8 +22,18 @@ var YTP_RGB_BUTTON_CLASS = "ytp-rgb-button";
 
 var YTP_RGB_BODY_CLASS = "ytp-rgb-stretcher";
 
+var YTP_MUTATION_OBSERVER_CLASS = "ytp-iv-video-content";
+
+var bodyObserver, videoObserver;
+var TIMEOUT_DELAY = 1500;
+var timeoutID = 0;
+
 function doStuff() {
     // <button class="ytp-subtitles-button ytp-button" aria-pressed="false" style="" title="Subtitles/closed captions"></button>
+    console.log("doing stuff");
+
+    // Apply effect and styling depending on stored value
+    var buttonEnabled = GM_getValue(GM_RGB_ENABLED_KEY, false);
 
     // Create player button element and add standard button classes
     var buttonElement = document.createElement("button");
@@ -31,9 +41,9 @@ function doStuff() {
     buttonElement.title = "Stretch RGB levels";
     buttonElement.innerHTML = SVG_PREFIX + SVG_CIRCLES_ICON + SVG_SUFFIX;
 
-    // Apply effect and styling depending on stored value
-    var buttonEnabled = GM_getValue(GM_RGB_ENABLED_KEY, false);
     buttonElement.setAttribute("aria-pressed", buttonEnabled);
+
+    console.log("button enabled: " + buttonEnabled);
 
     document.body.classList.toggle(YTP_RGB_BODY_CLASS, buttonEnabled);
     
@@ -49,22 +59,64 @@ function doStuff() {
     });
     
     var rightControls = document.getElementsByClassName("ytp-right-controls")[0];
-    if (rightControls === null) {
+    if (typeof rightControls === "undefined") {
         console.log("Couldn't find video controls.");
         return;
     }
     
+    // If rightControls has zero children, something went wrong, abort
     var firstRightControl = rightControls.firstChild;
-
-    if (firstRightControl === null) {
+    if (rightControls.children.length == 0) {
         console.log("Can't place the new button.");
         return;
     }
+
+    // Check if the button has already been placed and abort if so
+    if (rightControls.getElementsByClassName(YTP_RGB_BUTTON_CLASS).length > 0) {
+        console.log("The button is already there.");
+        return;
+    }
+
     rightControls.insertBefore(buttonElement, firstRightControl);
 }
 
+function addVideoObserver() {
+    var target = document.getElementsByClassName("html5-video-player")[0];
+    if (typeof target === "undefined") {
+        console.log("Can't find the video element.");
+        return;
+    }
+
+    videoObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            if (m.addedNodes.length > 0 && m.addedNodes[0].className == YTP_MUTATION_OBSERVER_CLASS) {
+                console.log("Video/site change detected!");
+                clearTimeout(timeoutID);
+                timeoutID = setTimeout(doStuff, TIMEOUT_DELAY);
+            }
+        });
+    });
+
+    var videoConfig = { childList: true };
+    videoObserver.observe(target, videoConfig);
+}
+
 (function() {
-    'use strict';
-    
-    doStuff();
+    "use strict";
+
+    bodyObserver = new MutationObserver(function(mutations) {
+        // mutations.forEach(function(m) {
+            if (document.body.getAttribute("data-spf-name") == "watch") {
+                console.log("Video page detected, attempting to do stuff.");
+                addVideoObserver();
+            } else {
+                console.log("This is not a video page.");
+            }
+        // });
+    });
+
+    var bodyConfig = { attributes: true };
+    bodyObserver.observe(document.body, bodyConfig);
+
+    // doStuff();
 })();
