@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RGB Stretcher
 // @namespace    https://peterwunder.de
-// @version      1.3
+// @version      1.4
 // @description  Uses CSS filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle.
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
@@ -28,6 +28,8 @@ var bodyObserver, videoObserver;
 var TIMEOUT_DELAY = 1500;
 var timeoutID = 0;
 
+var hasStarted = false;
+
 function doStuff() {
     // <button class="ytp-subtitles-button ytp-button" aria-pressed="false" style="" title="Subtitles/closed captions"></button>
     console.log("doing stuff");
@@ -46,7 +48,7 @@ function doStuff() {
     console.log("button enabled: " + buttonEnabled);
 
     document.body.classList.toggle(YTP_RGB_BODY_CLASS, buttonEnabled);
-    
+
     buttonElement.addEventListener("click", function(e) {
         var isCurrentlyPressed = this.getAttribute("aria-pressed") == "true";
         var newPressedStatus = !isCurrentlyPressed;
@@ -57,13 +59,13 @@ function doStuff() {
 
         GM_setValue(GM_RGB_ENABLED_KEY, newPressedStatus);
     });
-    
+
     var rightControls = document.getElementsByClassName("ytp-right-controls")[0];
     if (typeof rightControls === "undefined") {
         console.log("Couldn't find video controls.");
         return;
     }
-    
+
     // If rightControls has zero children, something went wrong, abort
     var firstRightControl = rightControls.firstChild;
     if (rightControls.children.length == 0) {
@@ -99,20 +101,22 @@ function addVideoObserver() {
 
     var videoConfig = { childList: true };
     videoObserver.observe(target, videoConfig);
+    console.log("observer active");
+
+    doStuff();
 }
 
 (function() {
     "use strict";
 
     bodyObserver = new MutationObserver(function(mutations) {
-        // mutations.forEach(function(m) {
-            if (document.body.getAttribute("data-spf-name") == "watch") {
-                console.log("Video page detected, attempting to do stuff.");
-                addVideoObserver();
-            } else {
-                console.log("This is not a video page.");
-            }
-        // });
+        var ytdAppElements = document.getElementsByTagName("ytd-app");
+        if (ytdAppElements.length > 0 && ytdAppElements[0].hasAttribute("is-watch-page")) {
+            console.log("Video page detected, attempting to do stuff.");
+            addVideoObserver();
+        } else {
+            console.log("This is not a video page.");
+        }
     });
 
     var bodyConfig = { attributes: true };
