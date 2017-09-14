@@ -5,6 +5,8 @@
 // @description  Uses CSS filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle.
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
+// @updateURL    https://gist.githubusercontent.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/raw/ytp-rgb-stretcher.js
+// @downloadURL  https://gist.githubusercontent.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/raw/ytp-rgb-stretcher.js
 // @grant GM_setValue
 // @grant GM_getValue
 // ==/UserScript==
