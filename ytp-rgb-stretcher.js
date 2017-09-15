@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         RGB Stretcher
 // @namespace    https://peterwunder.de
-// @version      1.51
-// @description  Uses SVG filters to attempt to stretch the "TV" RGB range to an approximation of the full RGB range. Depends on the "RGB Stretcher" userstyle: https://gist.github.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/
+// @version      1.52
+// @description  Uses SVG filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle: https://gist.github.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
 // @updateURL    https://gist.githubusercontent.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/raw/ytp-rgb-stretcher.js
@@ -18,9 +18,9 @@ var SVG_FILTER = `
 <svg style="position:absolute;" xmlns="http://www.w3.org/2000/svg">
   <filter id="yt-rgb-fix">
     <feComponentTransfer>
-      <feFuncR type="linear" slope="1.1123227917121046" intercept="-0.025081788440567084"/>
-      <feFuncG type="linear" slope="1.1123227917121046" intercept="-0.025081788440567084"/>
-      <feFuncB type="linear" slope="1.1123227917121046" intercept="-0.025081788440567084"/>
+      <feFuncR type="linear" slope="1.1086956521739126" intercept="-0.02173913043478262"/>
+      <feFuncG type="linear" slope="1.1086956521739126" intercept="-0.02173913043478262"/>
+      <feFuncB type="linear" slope="1.1086956521739126" intercept="-0.02173913043478262"/>
     </feComponentTransfer>
   </filter>
 </svg>
