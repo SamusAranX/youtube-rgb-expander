@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RGB Stretcher
 // @namespace    https://peterwunder.de
-// @version      1.53
+// @version      1.54
 // @description  Uses SVG filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle: https://gist.github.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
@@ -18,9 +18,9 @@ var SVG_FILTER = `
 <svg style="position:absolute;" xmlns="http://www.w3.org/2000/svg">
   <filter id="yt-rgb-fix">
     <feComponentTransfer>
-      <feFuncR type="linear" slope="1.0944206008583686" intercept="-0.008583690987124467"/>
-      <feFuncG type="linear" slope="1.0944206008583686" intercept="-0.008583690987124467"/>
-      <feFuncB type="linear" slope="1.0944206008583686" intercept="-0.008583690987124467"/>
+      <feFuncR type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
+      <feFuncG type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
+      <feFuncB type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
     </feComponentTransfer>
   </filter>
 </svg>
