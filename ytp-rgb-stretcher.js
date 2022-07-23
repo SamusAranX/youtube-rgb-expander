@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         RGB Stretcher
+// @name         RGB Expander
 // @namespace    https://peterwunder.de
-// @version      1.54
-// @description  Uses SVG filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Stretcher" userstyle: https://gist.github.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/
+// @version      1.55
+// @description  Uses SVG filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Expander" userstyle: https://gist.github.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
 // @updateURL    https://gist.githubusercontent.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/raw/ytp-rgb-stretcher.js
@@ -17,11 +17,11 @@ var SVG_SUFFIX = "</svg>";
 var SVG_FILTER = `
 <svg style="position:absolute;" xmlns="http://www.w3.org/2000/svg">
   <filter id="yt-rgb-fix">
-    <feComponentTransfer>
-      <feFuncR type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
-      <feFuncG type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
-      <feFuncB type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
-    </feComponentTransfer>
+	<feComponentTransfer>
+	  <feFuncR type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
+	  <feFuncG type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
+	  <feFuncB type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
+	</feComponentTransfer>
   </filter>
 </svg>
 `;
@@ -47,106 +47,106 @@ var timeoutID = 0;
 var hasStarted = false;
 
 function appendRawHTML(el, str) {
-    var div = document.createElement('div');
-    div.innerHTML = str;
-    while (div.children.length > 0) {
-        el.appendChild(div.children[0]);
-    }
+	var div = document.createElement('div');
+	div.innerHTML = str;
+	while (div.children.length > 0) {
+		el.appendChild(div.children[0]);
+	}
 }
 
 function doStuff() {
-    // <button class="ytp-subtitles-button ytp-button" aria-pressed="false" style="" title="Subtitles/closed captions"></button>
-    console.log("doing stuff");
+	// <button class="ytp-subtitles-button ytp-button" aria-pressed="false" style="" title="Subtitles/closed captions"></button>
+	console.log("doing stuff");
 
-    // Apply effect and styling depending on stored value
-    var buttonEnabled = GM_getValue(GM_RGB_ENABLED_KEY, false);
+	// Apply effect and styling depending on stored value
+	var buttonEnabled = GM_getValue(GM_RGB_ENABLED_KEY, false);
 
-    // Create player button element and add standard button classes
-    var buttonElement = document.createElement("button");
-    buttonElement.classList.add(YTP_BUTTON_CLASS, YTP_RGB_BUTTON_CLASS);
-    buttonElement.title = "Stretch RGB levels";
-    buttonElement.innerHTML = SVG_PREFIX + SVG_CIRCLES_ICON + SVG_SUFFIX;
+	// Create player button element and add standard button classes
+	var buttonElement = document.createElement("button");
+	buttonElement.classList.add(YTP_BUTTON_CLASS, YTP_RGB_BUTTON_CLASS);
+	buttonElement.title = "Stretch RGB levels";
+	buttonElement.innerHTML = SVG_PREFIX + SVG_CIRCLES_ICON + SVG_SUFFIX;
 
-    buttonElement.setAttribute("aria-pressed", buttonEnabled);
+	buttonElement.setAttribute("aria-pressed", buttonEnabled);
 
-    console.log("button enabled: " + buttonEnabled);
+	console.log("button enabled: " + buttonEnabled);
 
-    document.body.classList.toggle(YTP_RGB_BODY_CLASS, buttonEnabled);
+	document.body.classList.toggle(YTP_RGB_BODY_CLASS, buttonEnabled);
 
-    buttonElement.addEventListener("click", function(e) {
-        var isCurrentlyPressed = this.getAttribute("aria-pressed") == "true";
-        var newPressedStatus = !isCurrentlyPressed;
+	buttonElement.addEventListener("click", function(e) {
+		var isCurrentlyPressed = this.getAttribute("aria-pressed") == "true";
+		var newPressedStatus = !isCurrentlyPressed;
 
-        this.setAttribute("aria-pressed", newPressedStatus);
+		this.setAttribute("aria-pressed", newPressedStatus);
 
-        document.body.classList.toggle(YTP_RGB_BODY_CLASS, newPressedStatus);
+		document.body.classList.toggle(YTP_RGB_BODY_CLASS, newPressedStatus);
 
-        GM_setValue(GM_RGB_ENABLED_KEY, newPressedStatus);
-    });
+		GM_setValue(GM_RGB_ENABLED_KEY, newPressedStatus);
+	});
 
-    var rightControls = document.getElementsByClassName("ytp-right-controls")[0];
-    if (typeof rightControls === "undefined") {
-        console.log("Couldn't find video controls.");
-        return;
-    }
+	var rightControls = document.getElementsByClassName("ytp-right-controls")[0];
+	if (typeof rightControls === "undefined") {
+		console.log("Couldn't find video controls.");
+		return;
+	}
 
-    // If rightControls has zero children, something went wrong, abort
-    var firstRightControl = rightControls.firstChild;
-    if (rightControls.children.length == 0) {
-        console.log("Can't place the new button.");
-        return;
-    }
+	// If rightControls has zero children, something went wrong, abort
+	var firstRightControl = rightControls.firstChild;
+	if (rightControls.children.length == 0) {
+		console.log("Can't place the new button.");
+		return;
+	}
 
-    // Check if the button has already been placed and abort if so
-    if (rightControls.getElementsByClassName(YTP_RGB_BUTTON_CLASS).length > 0) {
-        console.log("The button is already there.");
-        return;
-    }
+	// Check if the button has already been placed and abort if so
+	if (rightControls.getElementsByClassName(YTP_RGB_BUTTON_CLASS).length > 0) {
+		console.log("The button is already there.");
+		return;
+	}
 
-    appendRawHTML(document.body, SVG_FILTER);
+	appendRawHTML(document.body, SVG_FILTER);
 
-    rightControls.insertBefore(buttonElement, firstRightControl);
+	rightControls.insertBefore(buttonElement, firstRightControl);
 }
 
 function addVideoObserver() {
-    var target = document.getElementsByClassName("html5-video-player")[0];
-    if (typeof target === "undefined") {
-        console.log("Can't find the video element.");
-        return;
-    }
+	var target = document.getElementsByClassName("html5-video-player")[0];
+	if (typeof target === "undefined") {
+		console.log("Can't find the video element.");
+		return;
+	}
 
-    videoObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            if (m.addedNodes.length > 0 && m.addedNodes[0].className == YTP_MUTATION_OBSERVER_CLASS) {
-                console.log("Video/site change detected!");
-                clearTimeout(timeoutID);
-                timeoutID = setTimeout(doStuff, TIMEOUT_DELAY);
-            }
-        });
-    });
+	videoObserver = new MutationObserver(function(mutations) {
+		mutations.forEach(function(m) {
+			if (m.addedNodes.length > 0 && m.addedNodes[0].className == YTP_MUTATION_OBSERVER_CLASS) {
+				console.log("Video/site change detected!");
+				clearTimeout(timeoutID);
+				timeoutID = setTimeout(doStuff, TIMEOUT_DELAY);
+			}
+		});
+	});
 
-    var videoConfig = { childList: true };
-    videoObserver.observe(target, videoConfig);
-    console.log("observer active");
+	var videoConfig = { childList: true };
+	videoObserver.observe(target, videoConfig);
+	console.log("observer active");
 
-    doStuff();
+	doStuff();
 }
 
 (function() {
-    "use strict";
+	"use strict";
 
-    bodyObserver = new MutationObserver(function(mutations) {
-        var ytdAppElements = document.getElementsByTagName("ytd-app");
-        if (ytdAppElements.length > 0 && ytdAppElements[0].hasAttribute("is-watch-page")) {
-            console.log("Video page detected, attempting to do stuff.");
-            addVideoObserver();
-        } else {
-            console.log("This is not a video page.");
-        }
-    });
+	bodyObserver = new MutationObserver(function(mutations) {
+		var ytdAppElements = document.getElementsByTagName("ytd-app");
+		if (ytdAppElements.length > 0) {
+			console.log("Video page detected, attempting to do stuff.");
+			addVideoObserver();
+		} else {
+			console.log("This is not a video page.");
+		}
+	});
 
-    var bodyConfig = { attributes: true };
-    bodyObserver.observe(document.body, bodyConfig);
+	var bodyConfig = { attributes: true };
+	bodyObserver.observe(document.body, bodyConfig);
 
-    // doStuff();
+	// doStuff();
 })();
