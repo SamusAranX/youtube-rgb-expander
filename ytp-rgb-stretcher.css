@@ -2,7 +2,7 @@ video.video-stream.html5-main-video {
 	/*transition: .5s filter ease;*/
 }
 body.ytp-rgb-stretcher video.video-stream.html5-main-video {
-	filter: url(#yt-rgb-fix);
+	filter: url(#rgb-expander);
 }
 
 @keyframes ytp-rgb-fadein {

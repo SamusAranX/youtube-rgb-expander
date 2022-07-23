@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         RGB Expander
 // @namespace    https://peterwunder.de
-// @version      1.55
-// @description  Uses SVG filters to attempt to stretch the "TV" RGB range to the full RGB range. Depends on the "RGB Expander" userstyle: https://gist.github.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/
+// @version      1.6
+// @description  Uses SVG filters to expand videos from limited RGB range to full RGB range. Depends on the "RGB Expander" userstyle: https://github.com/SamusAranX/youtube-rgb-expander
 // @author       Peter Wunder
 // @match        https://www.youtube.com/*
-// @updateURL    https://gist.githubusercontent.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/raw/ytp-rgb-stretcher.js
-// @downloadURL  https://gist.githubusercontent.com/SamusAranX/402b362fc5d3f5e49225ebde7084c927/raw/ytp-rgb-stretcher.js
+// @updateURL    https://raw.githubusercontent.com/SamusAranX/youtube-rgb-expander/main/ytp-rgb-stretcher.js
+// @downloadURL  https://raw.githubusercontent.com/SamusAranX/youtube-rgb-expander/main/ytp-rgb-stretcher.js
 // @grant GM_setValue
 // @grant GM_getValue
 // ==/UserScript==
@@ -16,13 +16,13 @@ var SVG_SUFFIX = "</svg>";
 
 var SVG_FILTER = `
 <svg style="position:absolute;" xmlns="http://www.w3.org/2000/svg">
-  <filter id="yt-rgb-fix">
-	<feComponentTransfer>
-	  <feFuncR type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
-	  <feFuncG type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
-	  <feFuncB type="linear" slope="1.1062906724511925" intercept="-0.019522776572668116"/>
-	</feComponentTransfer>
-  </filter>
+	<filter id="rgb-expander">
+		<feComponentTransfer>
+			<feFuncR type="table" tableValues="-0.0730593607305936 1.091324200913242"></feFuncR>
+			<feFuncG type="table" tableValues="-0.0730593607305936 1.091324200913242"></feFuncG>
+			<feFuncB type="table" tableValues="-0.0730593607305936 1.091324200913242"></feFuncB>
+		</feComponentTransfer>
+	</filter>
 </svg>
 `;
 
@@ -64,7 +64,7 @@ function doStuff() {
 	// Create player button element and add standard button classes
 	var buttonElement = document.createElement("button");
 	buttonElement.classList.add(YTP_BUTTON_CLASS, YTP_RGB_BUTTON_CLASS);
-	buttonElement.title = "Stretch RGB levels";
+	buttonElement.title = "Expand RGB levels";
 	buttonElement.innerHTML = SVG_PREFIX + SVG_CIRCLES_ICON + SVG_SUFFIX;
 
 	buttonElement.setAttribute("aria-pressed", buttonEnabled);
